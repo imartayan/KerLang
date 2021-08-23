@@ -3,9 +3,17 @@
 
 /*
     This function takes 1 argument.
+    Let --i don't give a f*ck about names// be 6.
+    Let ^_^ be 10.
     It returns the sum of argument 1 and 0.
     I can write whatever I want :
     as long as it does not contain reserved keywords it will be ignored.
     PS: semicolons are useless for functions!
  */
 function idc
+
+/*
+    It returns the application of idc on 7.
+    $$$
+ */
+function main
