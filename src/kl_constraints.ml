@@ -177,13 +177,13 @@ let parse_value (decl : (string * expr) list) (comment : tok list) : value =
     | "argument" ->
       begin match q with
         | Int (_, n)::_ -> Arg n
-        | _ -> raise (SyntaxError (tok_pos t, "expected argument index"))
+        | _ -> raise (ParseError (tok_pos t, "expected argument index"))
       end
     | "something" | "_" | "?" -> Hole
     | _ ->
       let s = string_of_comment comment in
       if List.mem_assoc s decl then Var s
-      else raise (SyntaxError (tok_pos (List.hd comment), "no variable named " ^ s))
+      else raise (ParseError (tok_pos (List.hd comment), "no variable named " ^ s))
 
 let parse_operation ftable (decl : (string * expr) list) (comment : tok list) : operation =
   let f x = Leaf (parse_value decl x) in
@@ -196,31 +196,31 @@ let parse_operation ftable (decl : (string * expr) list) (comment : tok list) : 
               let a, b = look_for ["and"] q in
               let b, _ = look_for ["otherwise"] b in
               If (f a, f (List.rev prev), f b)
-            with KeywordNotFound msg -> raise (SyntaxError (tok_pos t, msg)) end
+            with KeywordNotFound msg -> raise (ParseError (tok_pos t, msg)) end
         | "addition" | "sum" ->
           begin try
               let _, b = look_for ["of"] q in
               let a, b = look_for ["and"] b in
               Sum (f a, f b)
-            with KeywordNotFound msg -> raise (SyntaxError (tok_pos t, msg)) end
+            with KeywordNotFound msg -> raise (ParseError (tok_pos t, msg)) end
         | "subtraction" | "difference" ->
           begin try
               let _, b = look_for ["of"] q in
               let a, b = look_for ["and"] b in
               Diff (f a, f b)
-            with KeywordNotFound msg -> raise (SyntaxError (tok_pos t, msg)) end
+            with KeywordNotFound msg -> raise (ParseError (tok_pos t, msg)) end
         | "multiplication" | "product" ->
           begin try
               let _, b = look_for ["of"] q in
               let a, b = look_for ["and"] b in
               Prod (f a, f b)
-            with KeywordNotFound msg -> raise (SyntaxError (tok_pos t, msg)) end
+            with KeywordNotFound msg -> raise (ParseError (tok_pos t, msg)) end
         | "division" | "quotient" | "ratio" ->
           begin try
               let _, b = look_for ["of"] q in
               let a, b = look_for ["and"] b in
               Div (f a, f b)
-            with KeywordNotFound msg -> raise (SyntaxError (tok_pos t, msg)) end
+            with KeywordNotFound msg -> raise (ParseError (tok_pos t, msg)) end
         | "application" ->
           begin try
               let _, b = look_for ["of"] q in
@@ -228,8 +228,8 @@ let parse_operation ftable (decl : (string * expr) list) (comment : tok list) : 
               let s = string_of_comment a and l = split_kwd "and" b in
               if s = "self" then Rec (List.map f l)
               else if List.mem_assoc s ftable then App (s, List.map f l)
-              else raise (SyntaxError (tok_pos t, "no function named " ^ s))
-            with KeywordNotFound msg -> raise (SyntaxError (tok_pos t, msg)) end
+              else raise (ParseError (tok_pos t, "no function named " ^ s))
+            with KeywordNotFound msg -> raise (ParseError (tok_pos t, msg)) end
         | _ -> search (t::prev) q
       )
   in search [] comment
@@ -243,12 +243,12 @@ let rec parse_statement ftable (decl : (string * expr) list) (comment : tok list
     | "take" | "takes" ->
       begin match q with
         | Int (_, n)::_ -> Takes n
-        | _ -> raise (SyntaxError (tok_pos t, "expected number of arguments"))
+        | _ -> raise (ParseError (tok_pos t, "expected number of arguments"))
       end
     | "let" ->
       begin try
           let a, b = look_for ["be"] q in Let (string_of_comment a, f b)
-        with KeywordNotFound msg -> raise (SyntaxError (tok_pos t, msg)) end
+        with KeywordNotFound msg -> raise (ParseError (tok_pos t, msg)) end
     | "show" | "shows" -> let l = split_kwd "and" q in Shows (List.map f l)
     | "return" | "returns" -> Returns (f q)
     | "use" | "uses" -> let l = split_kwd "and" q in Uses (List.map f l)
