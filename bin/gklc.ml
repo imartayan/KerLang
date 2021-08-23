@@ -9,15 +9,13 @@ let parse_file f =
   let lexbuf = Lexing.from_channel (open_in f) in
   let blocks = ref [] in
   Lexing.set_filename lexbuf f;
-  let open Kerlang.Kl_parsing in
   try while true do
       blocks := Kerlang.Kl_parser.block lexbuf::!blocks
     done; []
   with
   | Kerlang.Kl_parser.Eof -> List.rev !blocks
-  | Kerlang.Kl_parser.SyntaxError msg ->
-    let pos = lexbuf.Lexing.lex_curr_p in
-    print_syntax_error pos msg
+  | Kerlang.Kl_errors.SyntaxError (pos, msg) ->
+    Kerlang.Kl_errors.syntax_error pos msg
 
 let usage_msg = Sys.argv.(0) ^ " [-verbose] <srcfile> -o <output>"
 
