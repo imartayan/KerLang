@@ -190,38 +190,38 @@ let parse_operation ftable (decl : (string * expr) list) (comment : tok list) : 
         match string_of_tok t with
         | "if" ->
           begin try
-              let a, b = look_for ["and"] q in
-              let b, _ = look_for ["otherwise"] b in
+              let a, b = look_for ["and"; "&"] q in
+              let b, _ = look_for ["otherwise"; "alternatively"] b in
               If (f a, f (List.rev prev), f b)
             with KeywordNotFound msg -> raise (ParseError (tok_pos t, msg)) end
         | "addition" | "sum" ->
           begin try
               let _, b = look_for ["of"] q in
-              let a, b = look_for ["and"] b in
+              let a, b = look_for ["and"; "&"] b in
               Sum (f a, f b)
             with KeywordNotFound msg -> raise (ParseError (tok_pos t, msg)) end
         | "subtraction" | "difference" ->
           begin try
-              let _, b = look_for ["of"] q in
-              let a, b = look_for ["and"] b in
+              let _, b = look_for ["of"; "between"] q in
+              let a, b = look_for ["and"; "&"; "by"] b in
               Diff (f a, f b)
             with KeywordNotFound msg -> raise (ParseError (tok_pos t, msg)) end
         | "multiplication" | "product" ->
           begin try
-              let _, b = look_for ["of"] q in
-              let a, b = look_for ["and"] b in
+              let _, b = look_for ["of"; "between"] q in
+              let a, b = look_for ["and"; "&"; "by"] b in
               Prod (f a, f b)
             with KeywordNotFound msg -> raise (ParseError (tok_pos t, msg)) end
         | "division" | "quotient" | "ratio" ->
           begin try
-              let _, b = look_for ["of"] q in
-              let a, b = look_for ["and"] b in
+              let _, b = look_for ["of"; "between"] q in
+              let a, b = look_for ["and"; "&"; "by"] b in
               Div (f a, f b)
             with KeywordNotFound msg -> raise (ParseError (tok_pos t, msg)) end
         | "application" ->
           begin try
               let _, b = look_for ["of"] q in
-              let a, b = look_for ["on"] b in
+              let a, b = look_for ["to"; "on"] b in
               let s = string_of_comment a and l = split_kwd "and" b in
               if s = "self" then Rec (List.map f l)
               else if List.mem_assoc s ftable then App (s, List.map f l)
@@ -272,7 +272,7 @@ let generate_function ftable (Spec (_, name, comment)) =
             end
           | Function _ ->
             begin
-              located_warning (tok_pos (List.hd c)) (name ^ " already has a return value, still using old return value");
+              located_warning (tok_pos (List.hd c)) (name ^ " already has a return value, keeping old return value");
               f.result
             end
         in build_function {f with result = r} q
