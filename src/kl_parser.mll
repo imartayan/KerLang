@@ -9,12 +9,12 @@ exception Eof
 let esc = '`'
 let white = [' ' '\t']+
 let newline = ['\n' '\r']+
-let separator = ['.' ';' ':']
+let separator = ['.' ';' ':' ',']
 let digit = ['0'-'9']
 let int = '-'? digit+
 let alpha = ['a'-'z' 'A'-'Z']
 let special = ['!'-'/' ':'-'@' '['-'`' '{'-'~']
-let used = ['`' '.' ';' ':']
+let used = ['`' '.' ';' ':' ',']
 let other = special # used
 let word = (alpha | digit | other)+
 let comment_start = "/*"
