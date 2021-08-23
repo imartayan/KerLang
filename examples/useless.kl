@@ -4,8 +4,8 @@
 /*
     This function takes 1 argument.
     It returns the sum of argument 1 and 0.
-    I can write whatever I want,
+    I can write whatever I want :
     as long as it does not contain reserved keywords it will be ignored.
-    PS: semicolons are useless!
+    PS: semicolons are useless for functions!
  */
 function idc

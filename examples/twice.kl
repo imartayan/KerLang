@@ -1,5 +1,5 @@
 /*
-	This function takes 1 argument,
+	This function takes 1 argument.
 	it returns the product of argument 1 and 2.
 */
 function twice;
