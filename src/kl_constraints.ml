@@ -129,8 +129,8 @@ let print_comment_function {name; n_args; declarations; result; _} =
 
 let split_lines (comment : tok list) : tok list list =
   let rec split (res : tok list list) (curr_expr : tok list) = function
-    | Sep::q -> split ((List.rev curr_expr)::res) [] q
-    | token::q -> split res (token::curr_expr) q
+    | Sep::next -> split ((List.rev curr_expr)::res) [] next
+    | token::next -> split res (token::curr_expr) next
     | [] -> List.rev res
   in split [] [] comment
 
@@ -153,26 +153,26 @@ let look_for (kwds : string list) (comment : tok list) : tok list * tok list =
   let rec search (prev : tok list) = function
     | [] ->
       raise (KeywordNotFound ("expected one of the following keywords: " ^ (String.concat " " kwds)))
-    | t::q ->
-      if List.mem (string_of_tok t) kwds then (List.rev prev, q)
-      else search (t::prev) q
+    | t::next ->
+      if List.mem (string_of_tok t) kwds then (List.rev prev, next)
+      else search (t::prev) next
   in search [] comment
 
 let split_kwd (kwd : string) (comment : tok list) : tok list list =
   let rec split (res : tok list list) (curr_expr : tok list) = function
     | [] -> List.rev ((List.rev curr_expr)::res)
-    | t::q -> if string_of_tok t = kwd then split ((List.rev curr_expr)::res) [] q
-      else split res (t::curr_expr) q
+    | t::next -> if string_of_tok t = kwd then split ((List.rev curr_expr)::res) [] next
+      else split res (t::curr_expr) next
   in split [] [] comment
 
 let parse_value (decl : (string * expr) list) (comment : tok list) : value =
   match comment with
   | [] -> Hole
   | (Int (_, n))::_ -> Cst n
-  | t::q ->
+  | t::next ->
     match string_of_tok t with
     | "argument" ->
-      begin match q with
+      begin match next with
         | Int (_, n)::_ -> Arg n
         | _ -> raise (ParseError (tok_pos t, "expected argument index"))
       end
@@ -186,48 +186,52 @@ let parse_operation ftable (decl : (string * expr) list) (comment : tok list) : 
   let f x = Leaf (parse_value decl x) in
   let rec search (prev : tok list) = function
     | [] -> raise InterruptParsing
-    | t::q -> (
+    | t::next -> (
         match string_of_tok t with
         | "if" ->
           begin try
-              let a, b = look_for ["and"; "&"] q in
+              let a, b = look_for ["and"; "&"] next in
               let b, _ = look_for ["otherwise"; "alternatively"] b in
               If (f a, f (List.rev prev), f b)
             with KeywordNotFound msg -> raise (ParseError (tok_pos t, msg)) end
+        | "+" -> Sum (f (List.rev prev), f next)
+        | "-" -> Diff (f (List.rev prev), f next)
+        | "*" -> Prod (f (List.rev prev), f next)
+        | "/" -> Div (f (List.rev prev), f next)
         | "addition" | "sum" ->
           begin try
-              let _, b = look_for ["of"] q in
+              let _, b = look_for ["of"] next in
               let a, b = look_for ["and"; "&"] b in
               Sum (f a, f b)
             with KeywordNotFound msg -> raise (ParseError (tok_pos t, msg)) end
         | "subtraction" | "difference" ->
           begin try
-              let _, b = look_for ["of"; "between"] q in
+              let _, b = look_for ["of"; "between"] next in
               let a, b = look_for ["and"; "&"; "by"] b in
               Diff (f a, f b)
             with KeywordNotFound msg -> raise (ParseError (tok_pos t, msg)) end
         | "multiplication" | "product" ->
           begin try
-              let _, b = look_for ["of"; "between"] q in
+              let _, b = look_for ["of"; "between"] next in
               let a, b = look_for ["and"; "&"; "by"] b in
               Prod (f a, f b)
             with KeywordNotFound msg -> raise (ParseError (tok_pos t, msg)) end
         | "division" | "quotient" | "ratio" ->
           begin try
-              let _, b = look_for ["of"; "between"] q in
+              let _, b = look_for ["of"; "between"] next in
               let a, b = look_for ["and"; "&"; "by"] b in
               Div (f a, f b)
             with KeywordNotFound msg -> raise (ParseError (tok_pos t, msg)) end
         | "application" ->
           begin try
-              let _, b = look_for ["of"] q in
+              let _, b = look_for ["of"] next in
               let a, b = look_for ["to"; "on"] b in
               let s = string_of_comment a and l = split_kwd "and" b in
               if s = "self" then Rec (List.map f l)
               else if List.mem_assoc s ftable then App (s, List.map f l)
               else raise (ParseError (tok_pos t, "no function named " ^ s))
             with KeywordNotFound msg -> raise (ParseError (tok_pos t, msg)) end
-        | _ -> search (t::prev) q
+        | _ -> search (t::prev) next
       )
   in search [] comment
 
@@ -235,33 +239,33 @@ let rec parse_statement ftable (decl : (string * expr) list) (comment : tok list
   let f x = try Node (parse_operation ftable decl x) with InterruptParsing -> Leaf (parse_value decl x) in
   match comment with
   | [] -> Nothing
-  | t::q ->
+  | t::next ->
     match string_of_tok t with
     | "take" | "takes" ->
-      begin match q with
+      begin match next with
         | Int (_, n)::_ -> Takes n
         | _ -> raise (ParseError (tok_pos t, "expected number of arguments"))
       end
     | "let" ->
       begin try
-          let a, b = look_for ["be"] q in Let (string_of_comment a, f b)
+          let a, b = look_for ["be"] next in Let (string_of_comment a, f b)
         with KeywordNotFound msg -> raise (ParseError (tok_pos t, msg)) end
-    | "show" | "shows" -> let l = split_kwd "and" q in Shows (List.map f l)
-    | "return" | "returns" -> Returns (f q)
-    | "use" | "uses" -> let l = split_kwd "and" q in Uses (List.map f l)
-    | _ -> parse_statement ftable decl q
+    | "show" | "shows" -> let l = split_kwd "and" next in Shows (List.map f l)
+    | "return" | "returns" -> Returns (f next)
+    | "use" | "uses" -> let l = split_kwd "and" next in Uses (List.map f l)
+    | _ -> parse_statement ftable decl next
 
 let generate_function ftable (Spec (_, name, comment)) =
   Printf.printf "- generating function %s\n" name;
   let comments = split_lines comment in
   let rec build_function (f : comment_function) = function
     | [] -> f
-    | c::q ->
+    | c::next ->
       match parse_statement ftable f.declarations c with
-      | Nothing -> build_function f q
-      | Takes n -> build_function {f with n_args = n} q
-      | Let (s, e) -> build_function {f with declarations = (s, e)::f.declarations} q
-      | Shows l -> build_function {f with printing = f.printing @ l} q
+      | Nothing -> build_function f next
+      | Takes n -> build_function {f with n_args = n} next
+      | Let (s, e) -> build_function {f with declarations = (s, e)::f.declarations} next
+      | Shows l -> build_function {f with printing = f.printing @ l} next
       | Returns e ->
         let r = match f.result with
           | Yolo [] -> Function e
@@ -275,7 +279,7 @@ let generate_function ftable (Spec (_, name, comment)) =
               located_warning (tok_pos (List.hd c)) (name ^ " already has a return value, keeping old return value");
               f.result
             end
-        in build_function {f with result = r} q
+        in build_function {f with result = r} next
       | Uses l ->
         let r = match f.result with
           | Yolo [] -> Yolo l
@@ -285,7 +289,7 @@ let generate_function ftable (Spec (_, name, comment)) =
               located_warning (tok_pos (List.hd c)) (name ^ " already has a return value, ignoring yolo mode");
               Function e
             end
-        in build_function {f with result = r} q
+        in build_function {f with result = r} next
   in
   let res = build_function {
       name; n_args = 0; declarations = []; printing = []; result = Yolo []
@@ -297,7 +301,7 @@ let rec complete_holes decl (remain : expr list) = function
   | Leaf Hole ->
     begin match remain with
       | [] -> raise InterruptParsing
-      | e::q -> complete_holes decl q e
+      | e::next -> complete_holes decl next e
     end
   | Leaf (Var s) -> complete_holes decl remain (List.assoc s decl)
   | Leaf v -> Leaf v, remain
@@ -337,9 +341,9 @@ let rec complete_holes decl (remain : expr list) = function
 
 let rec compile_yolo decl = function
   | [] -> raise (CompileError "unable to synthesize the function !")
-  | e::q ->
-    try let res, _ = complete_holes decl q e in res
-    with InterruptParsing -> compile_yolo decl q
+  | e::next ->
+    try let res, _ = complete_holes decl next e in res
+    with InterruptParsing -> compile_yolo decl next
 
 let rec compile_function (ftable : Kl_IR.ftable) { result; declarations; printing; _ } =
   let compile_ex = compile_expr ftable declarations in
@@ -352,7 +356,7 @@ let rec compile_function (ftable : Kl_IR.ftable) { result; declarations; printin
     compile_ex (compile_yolo declarations l)
   in let rec add_printing res = function
   | [] -> res
-  | e::q -> add_printing (Kl_IR.show (compile_ex e) res) q
+  | e::next -> add_printing (Kl_IR.show (compile_ex e) res) next
   in add_printing res printing
 
 and compile_expr ftable env = function
