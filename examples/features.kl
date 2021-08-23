@@ -1,0 +1,18 @@
+/*
+    Comments that have no particular meaning in our language are simply ignored.
+    You may notice that this function has no argument number,
+    in fact it has no arguments by default.
+    You can have variable names with spaces, you can even have special characters
+    and you can escape characters with `this syntax` if you need to.
+    Let some cool variable be 3.
+    Let ^^ uwu be 4.
+    Let `This function returns nothing` be 5.
+    There are various syntax for the same operation, so you can choose the one you prefer.
+    Let is this a variable? be the difference between
+    `This function returns nothing` and some cool variable.
+    Let it is! be the subtraction of
+    `This function returns nothing` and ^^ uwu.
+    Let yet another syntax be ^^ uwu - some cool variable.
+    This function may use something and _ and ? and is this a variable? and it is! and yet another syntax.
+*/
+function main
