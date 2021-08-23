@@ -141,42 +141,35 @@ let tok_pos = function
   | Int (p, _) | Word (p, _) -> p
   | Sep -> dev_error "sep has no position"
 
-let string_of_tok = function
+let untouched_string_of_tok = function
   | Int (_, n) -> string_of_int n
-  | Word (_, w) -> String.lowercase_ascii w
+  | Word (_, w) -> w
   | Sep -> ""
 
-let rec string_of_comment = function
-  | [] -> ""
-  | [t] -> string_of_tok t
-  | t::q -> (string_of_tok t) ^ " " ^ (string_of_comment q)
+let string_of_tok t = String.lowercase_ascii (untouched_string_of_tok t)
+
+let string_of_comment c = String.concat " " (List.map untouched_string_of_tok c)
 
 exception KeywordNotFound of string
 
-let look_for (kw : string) (comment : tok list) : tok list * tok list =
+let look_for (kwds : string list) (comment : tok list) : tok list * tok list =
   let rec search (prev : tok list) = function
-    | [] -> raise (KeywordNotFound ("expected keyword " ^ kw))
-    | t::q -> if string_of_tok t = kw then (List.rev prev, q)
+    | [] ->
+      raise (KeywordNotFound ("expected one of the following keywords: " ^ (String.concat " " kwds)))
+    | t::q ->
+      if List.mem (string_of_tok t) kwds then (List.rev prev, q)
       else search (t::prev) q
   in search [] comment
 
-let split_kw (kw : string) (comment : tok list) : tok list list =
+let split_kwd (kwd : string) (comment : tok list) : tok list list =
   let rec split (res : tok list list) (curr_expr : tok list) = function
     | [] -> List.rev ((List.rev curr_expr)::res)
-    | t::q -> if string_of_tok t = kw then split ((List.rev curr_expr)::res) [] q
+    | t::q -> if string_of_tok t = kwd then split ((List.rev curr_expr)::res) [] q
       else split res (t::curr_expr) q
   in split [] [] comment
 
 let parse_value (decl : (string * expr) list) (comment : tok list) : value =
-  let rec build_value res = function
-    | [] -> if List.mem_assoc res decl then Var res
-      else raise (SyntaxError (tok_pos (List.hd comment), "no variable named " ^ res))
-    | t::q ->
-      begin match string_of_tok t with
-        | "something" -> Hole
-        | s -> build_value (res ^ " " ^ s) q
-      end
-  in match comment with
+  match comment with
   | [] -> Hole
   | (Int (_, n))::_ -> Cst n
   | t::q ->
@@ -186,8 +179,11 @@ let parse_value (decl : (string * expr) list) (comment : tok list) : value =
         | Int (_, n)::_ -> Arg n
         | _ -> raise (SyntaxError (tok_pos t, "expected argument index"))
       end
-    | "something" -> Hole
-    | s -> build_value s q
+    | "something" | "_" | "?" -> Hole
+    | _ ->
+      let s = string_of_comment comment in
+      if List.mem_assoc s decl then Var s
+      else raise (SyntaxError (tok_pos (List.hd comment), "no variable named " ^ s))
 
 let parse_operation ftable (decl : (string * expr) list) (comment : tok list) : operation =
   let f x = Leaf (parse_value decl x) in
@@ -197,39 +193,39 @@ let parse_operation ftable (decl : (string * expr) list) (comment : tok list) : 
         match string_of_tok t with
         | "if" ->
           begin try
-              let a, b = look_for "and" q in
-              let b, _ = look_for "otherwise" b in
+              let a, b = look_for ["and"] q in
+              let b, _ = look_for ["otherwise"] b in
               If (f a, f (List.rev prev), f b)
             with KeywordNotFound msg -> raise (SyntaxError (tok_pos t, msg)) end
         | "addition" | "sum" ->
           begin try
-              let _, b = look_for "of" q in
-              let a, b = look_for "and" b in
+              let _, b = look_for ["of"] q in
+              let a, b = look_for ["and"] b in
               Sum (f a, f b)
             with KeywordNotFound msg -> raise (SyntaxError (tok_pos t, msg)) end
         | "subtraction" | "difference" ->
           begin try
-              let _, b = look_for "of" q in
-              let a, b = look_for "and" b in
+              let _, b = look_for ["of"] q in
+              let a, b = look_for ["and"] b in
               Diff (f a, f b)
             with KeywordNotFound msg -> raise (SyntaxError (tok_pos t, msg)) end
         | "multiplication" | "product" ->
           begin try
-              let _, b = look_for "of" q in
-              let a, b = look_for "and" b in
+              let _, b = look_for ["of"] q in
+              let a, b = look_for ["and"] b in
               Prod (f a, f b)
             with KeywordNotFound msg -> raise (SyntaxError (tok_pos t, msg)) end
         | "division" | "quotient" | "ratio" ->
           begin try
-              let _, b = look_for "of" q in
-              let a, b = look_for "and" b in
+              let _, b = look_for ["of"] q in
+              let a, b = look_for ["and"] b in
               Div (f a, f b)
             with KeywordNotFound msg -> raise (SyntaxError (tok_pos t, msg)) end
         | "application" ->
           begin try
-              let _, b = look_for "of" q in
-              let a, b = look_for "on" b in
-              let s = string_of_comment a and l = split_kw "and" b in
+              let _, b = look_for ["of"] q in
+              let a, b = look_for ["on"] b in
+              let s = string_of_comment a and l = split_kwd "and" b in
               if s = "self" then Rec (List.map f l)
               else if List.mem_assoc s ftable then App (s, List.map f l)
               else raise (SyntaxError (tok_pos t, "no function named " ^ s))
@@ -251,11 +247,11 @@ let rec parse_statement ftable (decl : (string * expr) list) (comment : tok list
       end
     | "let" ->
       begin try
-          let a, b = look_for "be" q in Let (string_of_comment a, f b)
+          let a, b = look_for ["be"] q in Let (string_of_comment a, f b)
         with KeywordNotFound msg -> raise (SyntaxError (tok_pos t, msg)) end
-    | "show" | "shows" -> let l = split_kw "and" q in Shows (List.map f l)
+    | "show" | "shows" -> let l = split_kwd "and" q in Shows (List.map f l)
     | "return" | "returns" -> Returns (f q)
-    | "use" | "uses" -> let l = split_kw "and" q in Uses (List.map f l)
+    | "use" | "uses" -> let l = split_kwd "and" q in Uses (List.map f l)
     | _ -> parse_statement ftable decl q
 
 let generate_function ftable (Spec (_, name, comment)) =
@@ -299,7 +295,6 @@ let generate_function ftable (Spec (_, name, comment)) =
     } comments
   in
   print_comment_function res; res
-
 
 let rec complete_holes decl (remain : expr list) = function
   | Leaf Hole ->
