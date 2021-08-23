@@ -1,51 +1,54 @@
 {
 open Lexing
 open Kl_parsing
+open Kl_errors
 
-exception SyntaxError of string
 exception Eof
 }
 
-let int = '-'? ['0'-'9'] ['0'-'9']*
+let escape = '`'
 let white = [' ' '\t']+
-let newline = '\r' | '\n' | "\r\n"
-let sep = '.' | '!' | '?' | ':' | ';' | ','
-let word = ['a'-'z' 'A'-'Z' '_'] ['a'-'z' 'A'-'Z' '0'-'9' '_']*
+let newline = ['\n' '\r']+
+let separator = ['.' ';' ':']
+let digit = ['0'-'9']
+let int = '-'? digit+
+let alpha = ['a'-'z' 'A'-'Z']
+let special = ['!'-'/' ':'-'@' '['-'`' '{'-'~']
+let used = ['`' '.' ';' ':']
+let other = special # used
+let word = (alpha | other) (alpha | digit | other)*
 
 rule block = parse
   | white     { block lexbuf }
   | newline   { next_line lexbuf; block lexbuf }
-  | "/*"      { comment (ref []) lexbuf }
+  | "/*"      { comment [] lexbuf }
   | _         {
     let c = Lexing.lexeme lexbuf in
-    raise (SyntaxError (
-      "Unexcepected character '"
-      ^ c
-      ^ "', expected comment block"))
+    raise (SyntaxError (lexbuf.lex_curr_p, "unexpected character '"^c^"', expected comment block"))
   }
   | eof       { raise Eof }
 
 and comment l = parse
   | white     { comment l lexbuf }
   | newline   { next_line lexbuf; comment l lexbuf }
-  | "*/"      { defun (List.rev !l) lexbuf }
-  | word      { l := (Word (lexbuf.lex_curr_p, Lexing.lexeme lexbuf))::!l; comment l lexbuf }
-  | int       { l := (Int (lexbuf.lex_curr_p, int_of_string (Lexing.lexeme lexbuf)))::!l; comment l lexbuf }
-  | sep       { l := Sep::!l; comment l lexbuf }
+  | separator { let l = Sep::l in comment l lexbuf }
+  | "*/"      { defun (List.rev l) lexbuf }
+  | int       { let l = (Int (lexbuf.lex_curr_p, int_of_string (Lexing.lexeme lexbuf)))::l in comment l lexbuf }
+  | word      { let l = (Word (lexbuf.lex_curr_p, Lexing.lexeme lexbuf))::l in comment l lexbuf }
   | _         {
     let c = Lexing.lexeme lexbuf in
-    raise (SyntaxError ("invalid token '" ^ c ^ "' found while parsing a comment"))
+    raise (SyntaxError (lexbuf.lex_curr_p, "invalid token '"^c^"' found while parsing a comment"))
   }
-  | eof       { raise (SyntaxError "unexpected end of file while parsing a comment") }
+  | eof       { raise (SyntaxError (lexbuf.lex_curr_p, "unexpected end of file while parsing a comment")) }
 
 and defun l = parse
   | white     { defun l lexbuf }
   | newline   { next_line lexbuf; defun l lexbuf }
-  | "/*"      { comment (ref []) lexbuf }
+  | "/*"      { comment [] lexbuf }
   | "function " (word as fname) ";" { Spec (true, fname, l) }
   | "function " (word as fname) { Spec (true, fname, l) } (* semicolons are optional *)
   | _         {
     let c = Lexing.lexeme lexbuf in
-    raise (SyntaxError ("invalid token '" ^ c ^ "' found while parsing a function definition"))
+    raise (SyntaxError (lexbuf.lex_curr_p, "invalid token '"^c^"' found while parsing a function definition"))
   }
   | eof       { raise Eof }
