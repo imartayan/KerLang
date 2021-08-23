@@ -1,6 +1,6 @@
 # KerLang
 
-KerLang is an innovative programming language built with love <3 for the [Langjam0001](https://github.com/langjam/jam0001). It features a state of the art compiler named "The Glorious KerLang Compiler" (also known as *the Glorious Ker-Lann Compiler* but who cares ?) and a first-class support for comment-oriented programming.
+KerLang is an innovative programming language built with love by [Arthur Correnson](https://github.com/jdrprod) and [Anima Libera](https://github.com/anima-libera) for the first edition of [Lang Jam](https://github.com/langjam/jam0001). It features a state of the art compiler named "The Glorious KerLang Compiler" (also known as *the Glorious Ker-Lann Compiler* but who cares ?) and a first-class support for comment-oriented programming.
 
 ## What on Earth is *comment-oriented programming* ?
 
@@ -30,7 +30,7 @@ To generate code, one can simply specify an output file. The KerLang compiler wi
 (*----------------------------------------------------*)
 
 let twice = (fun x0 ->
-  (( * ) 
+  (( * )
     x0
     2))
 ```
