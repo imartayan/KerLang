@@ -201,25 +201,25 @@ let parse_operation ftable (decl : (string * expr) list) (comment : tok list) : 
               let b, _ = look_for "otherwise" b in
               If (f a, f (List.rev prev), f b)
             with KeywordNotFound msg -> raise (SyntaxError (tok_pos t, msg)) end
-        | "sum" ->
+        | "addition" | "sum" ->
           begin try
               let _, b = look_for "of" q in
               let a, b = look_for "and" b in
               Sum (f a, f b)
             with KeywordNotFound msg -> raise (SyntaxError (tok_pos t, msg)) end
-        | "difference" ->
+        | "subtraction" | "difference" ->
           begin try
               let _, b = look_for "of" q in
               let a, b = look_for "and" b in
               Diff (f a, f b)
             with KeywordNotFound msg -> raise (SyntaxError (tok_pos t, msg)) end
-        | "product" ->
+        | "multiplication" | "product" ->
           begin try
               let _, b = look_for "of" q in
               let a, b = look_for "and" b in
               Prod (f a, f b)
             with KeywordNotFound msg -> raise (SyntaxError (tok_pos t, msg)) end
-        | "division" ->
+        | "division" | "quotient" | "ratio" ->
           begin try
               let _, b = look_for "of" q in
               let a, b = look_for "and" b in
