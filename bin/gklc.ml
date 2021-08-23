@@ -70,7 +70,9 @@ let () =
   with
   | Kerlang.Kl_errors.DeveloperError msg ->
     Kerlang.Kl_errors.dev_error msg
-  | Kerlang.Kl_errors.CompileError msg ->
-    Kerlang.Kl_errors.error msg
   | Kerlang.Kl_errors.SyntaxError (pos, msg) ->
     Kerlang.Kl_errors.syntax_error pos msg
+  | Kerlang.Kl_errors.ParseError (pos, msg) ->
+    Kerlang.Kl_errors.parse_error pos msg
+  | Kerlang.Kl_errors.CompileError msg ->
+    Kerlang.Kl_errors.compile_error msg
