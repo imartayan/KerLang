@@ -95,9 +95,6 @@ and comment_function = {
   result : function_result;
 }
 
-let is_hole (v : value) =
-  match v with | Arg _ | Cst _ | Var _ -> false | Hole -> true
-
 let rec has_holes = function
   | Leaf Hole -> true
   | Leaf _ -> false
