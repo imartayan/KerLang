@@ -62,10 +62,11 @@ let[@inline] realize_ir p =
       (Option.get !output_lang) p
 
 let[@inline] exec_ir p =
-  if !exec then
+  if !exec then begin
     Printf.printf "\n[Executing \x1b[1;36mmain\x1b[0m]\n";
     Kerlang.Kl_codegen.executes p
     |> Printf.printf "[Result : \x1b[1;32m%d\x1b[0m]\n"
+  end
 
 let (|>!) x f = f x; x
 

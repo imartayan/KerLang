@@ -17,19 +17,19 @@ static inline int out(int x0, int x1)
     printf(\"%%d\\n\", x0);
     return x1;
 }
-static inline int add(int x0, int x1)
+static inline int kl_add(int x0, int x1)
 {
     return x0 + x1;
 }
-static inline int sub(int x0, int x1)
+static inline int kl_sub(int x0, int x1)
 {
     return x0 - x1;
 }
-static inline int mul(int x0, int x1)
+static inline int kl_mul(int x0, int x1)
 {
     return x0 * x1;
 }
-static inline int div(int x0, int x1)
+static inline int kl_div(int x0, int x1)
 {
     if (x1 == 0)
     {
@@ -87,13 +87,13 @@ and emit_op oc ?(self_name : string option = None) (op: op) =
   | OUT ->
     Printf.fprintf oc "out";
   | ADD ->
-    Printf.fprintf oc "add"
+    Printf.fprintf oc "kl_add"
   | SUB ->
-    Printf.fprintf oc "sub"
+    Printf.fprintf oc "kl_sub"
   | MUL ->
-    Printf.fprintf oc "mul"
+    Printf.fprintf oc "kl_mul"
   | DIV ->
-    Printf.fprintf oc "div"
+    Printf.fprintf oc "kl_div"
   | FUN name ->
     Printf.fprintf oc "%s" name
   | SELF ->
