@@ -31,7 +31,7 @@ let head = "<html lang=\"en\">
       text-decoration: underline;
       cursor: pointer;
     }
-  </style>\n"
+</style>\n"
 
 let script = "<script>
   let codes = document.getElementsByTagName('code')
@@ -71,4 +71,5 @@ let docgen oc p =
     Printf.fprintf oc "  <code id=\"code%d\"><span style=\"color: red\">function</span> %s;</code>\n" i name;
   ) p;
   Printf.fprintf oc "%s" script;
-  Printf.fprintf oc "</body>\n"
+  Printf.fprintf oc "</body>\n";
+  Printf.fprintf oc "</html>\n"
