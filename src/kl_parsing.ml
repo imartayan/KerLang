@@ -5,7 +5,10 @@ open Lexing
 *)
 
 type tok = Int of Lexing.position * int | Word of Lexing.position * string | Sep
+
 type spec = Spec of bool * string * tok list
+
+type spec_list = spec list
 
 let pp_tok fmt = function
   | Int (_, i) -> Format.fprintf fmt "%d" i

@@ -85,11 +85,11 @@ let () =
       exit 1
   end;
   try
-    parse_file !input_files
-    |>! generate_doc
-    |> generate_ir
-    |>! exec_ir
-    |> realize_ir
+    let spec = parse_file !input_files in
+    let code = generate_ir spec in
+    generate_doc spec;
+    realize_ir code;
+    exec_ir code
   with
   | Kerlang.Kl_errors.DeveloperError msg ->
     Kerlang.Kl_errors.dev_error msg
