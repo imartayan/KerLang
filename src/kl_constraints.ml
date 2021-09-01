@@ -108,20 +108,17 @@ let rec has_holes = function
     | App (_, l) | Rec l -> List.exists has_holes l
 
 let print_comment_function {name; n_args; declarations; result; _} =
-  Printf.printf "- info :\n  args: %d\n  declarations: [%s]\n"
-    n_args (List.map (fun (n, e) -> Format.asprintf "%s -> %a" n pp_expr e) declarations |> String.concat ", ");
+  Printf.printf "- info :\n  args: %d\n  declarations: [\n%s\n  ]\n"
+    n_args (List.map (fun (n, e) -> Format.asprintf "    %s -> %a" n pp_expr e) declarations |> String.concat ",\n");
   match result with
   | Yolo ctx ->
     Printf.printf "- constraints for %s are'nt sufficient to build a function\n" name;
     Printf.printf "- known context to synthesize a function:\n";
     List.iteri (fun i expr ->
-        Format.printf "  %d : %a\n" i pp_expr expr) ctx
+        print_string (Format.asprintf "  %d : %a\n" i pp_expr expr)) ctx
   | Function e ->
-    Printf.printf "- known context:\n";
-    List.iter (fun (name, expr) ->
-        Format.printf "  \"%s\" : %a\n" name pp_expr expr) declarations;
     Printf.printf "- generated function is:\n";
-    Format.printf "  %a\n" pp_expr e;
+    print_string (Format.asprintf "  %a\n" pp_expr e);
     if has_holes e then begin
       Printf.printf "- there are remaining holes in the function !\n";
       Printf.printf "  let's try to complete holes from context !\n"

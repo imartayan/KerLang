@@ -1,3 +1,4 @@
 (executable
  (public_name gklc)
- (libraries kerlang))
+ (libraries kerlang)
+ (modules gklc))
