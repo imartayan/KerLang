@@ -73,7 +73,7 @@ let (|>!) x f = f x; x
 let generate_doc p =
   if !doc_file <> "" then
     let oc = open_out !doc_file in
-    Kerlang.Kl_doc.docgen oc p;
+    Kerlang.Kl_doc.docgen (Format.formatter_of_out_channel oc) p;
     close_out oc
 
 

@@ -58,18 +58,21 @@ let dump_spec oc toks =
   let l = Kl_constraints.split_lines toks in
   List.iter (fun x ->
       String.concat " " (List.map Kl_constraints.untouched_string_of_tok x)
-      |> Printf.fprintf oc "    <i>%s</i><br>\n"
+      |> Format.fprintf oc "    <i>%s</i><br>\n"
     ) l
 
-let docgen oc p =
-  Printf.fprintf oc "%s" head;
-  Printf.fprintf oc "<body>\n";
+let dump_specs oc specs =
   List.iteri (fun i (Kl_parsing.Spec (_, name, spec)) ->
-    Printf.fprintf oc "  <p class=\"spec\" id=\"spec%d\">\n" i;
+    Format.fprintf oc "  <p class=\"spec\" id=\"spec%d\">\n" i;
     dump_spec oc spec;
-    Printf.fprintf oc "  </p>\n";
-    Printf.fprintf oc "  <code id=\"code%d\"><span style=\"color: red\">function</span> %s;</code>\n" i name;
-  ) p;
-  Printf.fprintf oc "%s" script;
-  Printf.fprintf oc "</body>\n";
-  Printf.fprintf oc "</html>\n"
+    Format.fprintf oc "  </p>\n";
+    Format.fprintf oc "  <code id=\"code%d\"><span style=\"color: red\">function</span> %s;</code>\n" i name;
+  ) specs
+
+let docgen oc p =
+  Format.fprintf oc "%s" head;
+  Format.fprintf oc "<body>\n";
+  dump_specs oc p;
+  Format.fprintf oc "%s" script;
+  Format.fprintf oc "</body>\n";
+  Format.fprintf oc "</html>\n"

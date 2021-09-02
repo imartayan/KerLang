@@ -1,0 +1,157 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="bundle.js"></script>
+  <style>
+    html {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100%;
+    }
+
+    p {
+      transition: height linear;
+      transition-duration: 0.3s;
+      overflow: hidden;
+    }
+
+    span:hover {
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    #code,
+    #specs,
+    #result {
+      width: 50%;
+      height: 20%;
+      margin: 10px;
+      border: 2px solid #333;
+      border-radius: 5px;
+      padding: 10px;
+      display: block;
+    }
+
+    #result {
+      overflow: scroll;
+    }
+
+    #code {
+      display: flex;
+    }
+
+    #code #format {
+      width: 40%;
+      height: 100%;
+      padding: 0;
+      margin: 0;
+      overflow: scroll;
+    }
+
+    #code {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    #code #editor {
+      width: 40%;
+      height: 100%;
+      padding: 0;
+      margin: 0;
+      border: none;
+      resize: none;
+    }
+
+    #buttons {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      width: 30%;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="code">
+    <textarea name="editor" id="editor" cols="30" rows="10"></textarea>
+    <div id="format"></div>
+  </div>
+  <div id="buttons">
+    <button id="compile">compile</button>
+    <button id="genC">generate C</button>
+    <button id="genPY">generate Py</button>
+    <button id="genML">generate ML</button>
+  </div>
+  <div id="specs">
+  </div>
+  <div id="result">
+    <pre id="output"></pre>
+  </div>
+  <script>
+    let compile = document.getElementById('compile')
+    let genC = document.getElementById('genC')
+    let genPY = document.getElementById('genPY')
+    let genML = document.getElementById('genML')
+    let editor = document.getElementById('editor')
+    let format = document.getElementById('format')
+    let output = document.getElementById('output')
+    compile.addEventListener('click', () => {
+      format.innerHTML = Kerlang.compile(editor.value)
+      renderCode()
+    })
+    genC.addEventListener('click', () => {
+      let g = Kerlang.generateC(editor.value)
+      format.innerHTML = g.specs
+      output.innerText = g.result
+      renderCode()
+    })
+    genPY.addEventListener('click', () => {
+      let g = Kerlang.generatePY(editor.value)
+      format.innerHTML = g.specs
+      output.innerText = g.result
+      renderCode()
+    })
+    genML.addEventListener('click', () => {
+      let g = Kerlang.generateML(editor.value)
+      format.innerHTML = g.specs
+      output.innerText = g.result
+      renderCode()
+    })
+
+    function renderCode() {
+      let codes = format.getElementsByTagName('code')
+      for (element of codes) {
+        console.log(element)
+        let spec_id = 'spec' + parseInt(element.id.substring(4))
+        let spec = document.getElementById(spec_id)
+        let height = spec.offsetHeight
+        spec.style.height = height
+        spec.is_shown = true
+        element.addEventListener('click', () => {
+          if (spec.is_shown) {
+            spec.is_shown = false
+            spec.style.height = 0
+          } else {
+            spec.is_shown = true
+            spec.style.height = height
+          }
+        })
+      }
+    }
+  </script>
+</body>
+
+</html>

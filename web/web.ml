@@ -41,8 +41,37 @@ let js_of_spec (Kl_parsing.Spec (_, name, toks)) =
 
 let _ =
   Js.export "Kerlang" (object%js
-    method parse s =
+    method compile s =
       parse_string (Js.to_string s)
-      |> List.map js_of_spec
-      |> list_to_array
+      |> Format.asprintf "%a" Kl_doc.dump_specs
+
+    method generatePY s =
+      let specs = parse_string (Js.to_string s) in
+      object%js
+        val specs =
+          Format.asprintf "%a" Kl_doc.dump_specs specs
+        val result =
+          Kl_codegen.emit_kl_ir specs
+          |> Format.asprintf "%a" Kl_codegen.PY_Realizer.realize
+      end
+
+    method generateML s =
+      let specs = parse_string (Js.to_string s) in
+      object%js
+        val specs =
+          Format.asprintf "%a" Kl_doc.dump_specs specs
+        val result =
+          Kl_codegen.emit_kl_ir specs
+          |> Format.asprintf "%a" Kl_codegen.ML_Realizer.realize
+      end
+    
+    method generateC s =
+      let specs = parse_string (Js.to_string s) in
+      object%js
+        val specs =
+          Format.asprintf "%a" Kl_doc.dump_specs specs
+        val result =
+          Kl_codegen.emit_kl_ir specs
+          |> Format.asprintf "%a" Kl_codegen.C_Realizer.realize
+      end
   end)
