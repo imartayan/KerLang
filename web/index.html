@@ -6,6 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <script src="bundle.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/split.js/1.6.2/split.min.js"
+    integrity="sha512-to2k78YjoNUq8+hnJS8AwFg/nrLRFLdYYalb18SlcsFRXavCOTfBF3lNyplKkLJeB8YjKVTb1FPHGSy9sXfSdg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"
+    integrity="sha512-GZ1RIgZaSc8rnco/8CXfRdCpDxRCphenIiZ2ztLy3XQfCbQUSCuk8IudvNHxkRA3oUg6q0qejgN/qqyG1duv5Q=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <style>
     html {
       margin: 0;
@@ -39,9 +45,7 @@
       width: 50%;
       height: 20%;
       margin: 10px;
-      border: 2px solid #333;
-      border-radius: 5px;
-      padding: 10px;
+      border: 2px solid #aaa;
       display: block;
     }
 
@@ -54,20 +58,13 @@
     }
 
     #code #format {
-      width: 40%;
       height: 100%;
-      padding: 0;
+      padding: 10px;
       margin: 0;
       overflow: scroll;
     }
 
-    #code {
-      display: flex;
-      justify-content: space-between;
-    }
-
     #code #editor {
-      width: 40%;
       height: 100%;
       padding: 0;
       margin: 0;
@@ -81,12 +78,19 @@
       justify-content: space-between;
       width: 30%;
     }
+
+    .gutter {
+      background-color: #aaa;
+      background-repeat: no-repeat;
+      background-position: 50%;
+    }
   </style>
 </head>
 
 <body>
   <div id="code">
-    <textarea name="editor" id="editor" cols="30" rows="10"></textarea>
+    <div id="editor"></div>
+    <!-- <textarea name="editor" id="editor" cols="30" rows="10"></textarea> -->
     <div id="format"></div>
   </div>
   <div id="buttons">
@@ -108,24 +112,27 @@
     let editor = document.getElementById('editor')
     let format = document.getElementById('format')
     let output = document.getElementById('output')
+    let ace_editor = ace.edit('editor')
+    ace_editor.setTheme('ace/theme/github')
+    Split(['#editor', '#format'])
     compile.addEventListener('click', () => {
-      format.innerHTML = Kerlang.compile(editor.value)
+      format.innerHTML = Kerlang.compile(ace_editor.getValue())
       renderCode()
     })
     genC.addEventListener('click', () => {
-      let g = Kerlang.generateC(editor.value)
+      let g = Kerlang.generateC(ace_editor.getValue())
       format.innerHTML = g.specs
       output.innerText = g.result
       renderCode()
     })
     genPY.addEventListener('click', () => {
-      let g = Kerlang.generatePY(editor.value)
+      let g = Kerlang.generatePY(ace_editor.getValue())
       format.innerHTML = g.specs
       output.innerText = g.result
       renderCode()
     })
     genML.addEventListener('click', () => {
-      let g = Kerlang.generateML(editor.value)
+      let g = Kerlang.generateML(ace_editor.getValue())
       format.innerHTML = g.specs
       output.innerText = g.result
       renderCode()
