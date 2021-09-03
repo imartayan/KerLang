@@ -5,11 +5,11 @@
   (pps js_of_ocaml-ppx))
  (libraries js_of_ocaml kerlang))
 
-(rule
- (deps web.bc.js)
- (targets bundle.js)
- (action
-  (copy %{deps} %{targets}))
- (mode
-  (promote
-   (only *.js))))
+; (rule
+;  (deps web.bc.js)
+;  (targets bundle.js)
+;  (action
+;   (copy %{deps} %{targets}))
+;  (mode
+;   (promote
+;    (only *.js))))
