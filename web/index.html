@@ -5,7 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
-  <script src="bundle.js"></script>
+  <script src="../_build/default/web/web.bc.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/split.js/1.6.2/split.min.js"
     integrity="sha512-to2k78YjoNUq8+hnJS8AwFg/nrLRFLdYYalb18SlcsFRXavCOTfBF3lNyplKkLJeB8YjKVTb1FPHGSy9sXfSdg=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -24,6 +24,19 @@
     body {
       margin: 0;
       padding: 0;
+      height: 100%;
+      width: 100%;
+    }
+
+    #main {
+      display: flex;
+      height: 90%;
+    }
+
+    #win-code,
+    #win-doc {
+      margin: 0;
+      padding: 0;
       width: 100%;
       display: flex;
       flex-direction: column;
@@ -31,12 +44,18 @@
       height: 100%;
     }
 
+    #win-code {
+      justify-content: center;
+    }
+
     header {
       font-family: Verdana, Geneva, Tahoma, sans-serif;
       background-color: #aaa;
       width: 100%;
+      height: 10%;
       text-align: center;
       color: #fff;
+      padding: 1px;
     }
 
     p {
@@ -53,12 +72,17 @@
     #code,
     #specs,
     #result {
-      width: 50%;
-      height: 20%;
+      width: 80%;
+      height: 30%;
       margin: 10px;
       border: 2px solid #aaa;
       display: block;
     }
+
+    #specs {
+      height: 10%;
+    }
+
 
     #result {
       overflow: scroll;
@@ -87,7 +111,7 @@
       display: flex;
       flex-direction: row;
       justify-content: space-between;
-      width: 30%;
+      width: 60%;
     }
 
     .gutter {
@@ -104,26 +128,33 @@
       KerLang web IDE
     </h1>
   </header>
-  <div id="code">
-    <div id="editor"></div>
-    <!-- <textarea name="editor" id="editor" cols="30" rows="10"></textarea> -->
-    <div id="format"></div>
+  <div id="main">
+    <div id="win-doc">
+    </div>
+    <div id="win-code">
+      <div id="code">
+        <div id="editor"></div>
+        <!-- <textarea name="editor" id="editor" cols="30" rows="10"></textarea> -->
+        <div id="format"></div>
+      </div>
+      <div id="specs">
+      </div>
+      <div class="buttons">
+        <button id="compile">compile</button>
+        <button id="genC">generate C</button>
+        <button id="genPY">generate Python (<i class="fab fa-python"></i>)</button>
+        <button id="genML">generate OCaml</button>
+      </div>
+      <div id="result">
+        <pre id="output"></pre>
+      </div>
+      <div class="buttons">
+        <button>copy to clip board</button>
+        <button>download</button>
+      </div>
+    </div>
   </div>
-  <div class="buttons">
-    <button id="compile">compile</button>
-    <button id="genC">generate C</button>
-    <button id="genPY">generate Python (<i class="fab fa-python"></i>)</button>
-    <button id="genML">generate OCaml</button>
-  </div>
-  <div id="specs">
-  </div>
-  <div id="result">
-    <pre id="output"></pre>
-  </div>
-  <div class="buttons">
-    <button>copy to clip board</button>
-    <button>download</button>
-  </div>
+
   <script>
     let compile = document.getElementById('compile')
     let genC = document.getElementById('genC')
@@ -135,6 +166,7 @@
     let ace_editor = ace.edit('editor')
     ace_editor.setTheme('ace/theme/github')
     Split(['#editor', '#format'])
+    Split(['#win-doc', '#win-code'])
     compile.addEventListener('click', () => {
       format.innerHTML = Kerlang.compile(ace_editor.getValue())
       renderCode()
