@@ -1,4 +1,7 @@
 (ocamllex kl_parser)
 
 (library
- (name kerlang))
+ (name kerlang)
+ (libraries js_of_ocaml)
+ (preprocess
+  (pps js_of_ocaml-ppx)))

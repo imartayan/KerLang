@@ -17,7 +17,7 @@ let parse_file f =
   | Kerlang.Kl_errors.SyntaxError (pos, msg) ->
     Kerlang.Kl_errors.syntax_error pos msg
 
-let usage_msg = Sys.argv.(0) ^ " [-verbose] <srcfile> -o <output>"
+let usage_msg = Sys.argv.(0) ^ " [-verbose] [-x] <srcfile> -o <output> -html <docfile>"
 
 let verbose = ref false
 let input_files = ref ""
@@ -40,7 +40,7 @@ let set_out_lang s =
     | ".py" -> output_lang := Some PY
     | ".c" -> output_lang := Some C
     | _ as ext ->
-      error ("Unknwon file extension '" ^ ext ^ "' (known extensions are .ml .py .c")
+      error ("Unknown file extension '" ^ ext ^ "' (known extensions are .ml .py .c")
   end;
   output_file := s
 
@@ -73,7 +73,7 @@ let (|>!) x f = f x; x
 let generate_doc p =
   if !doc_file <> "" then
     let oc = open_out !doc_file in
-    Kerlang.Kl_doc.docgen oc p;
+    Kerlang.Kl_doc.docgen (Format.formatter_of_out_channel oc) p;
     close_out oc
 
 
@@ -85,11 +85,11 @@ let () =
       exit 1
   end;
   try
-    parse_file !input_files
-    |>! generate_doc
-    |> generate_ir
-    |>! exec_ir
-    |> realize_ir
+    let spec = parse_file !input_files in
+    let code = generate_ir spec in
+    generate_doc spec;
+    realize_ir code;
+    exec_ir code
   with
   | Kerlang.Kl_errors.DeveloperError msg ->
     Kerlang.Kl_errors.dev_error msg
