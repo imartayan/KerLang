@@ -12,6 +12,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"
     integrity="sha512-GZ1RIgZaSc8rnco/8CXfRdCpDxRCphenIiZ2ztLy3XQfCbQUSCuk8IudvNHxkRA3oUg6q0qejgN/qqyG1duv5Q=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
     html {
       margin: 0;
@@ -72,7 +75,7 @@
       resize: none;
     }
 
-    #buttons {
+    .buttons {
       display: flex;
       flex-direction: row;
       justify-content: space-between;
@@ -93,16 +96,20 @@
     <!-- <textarea name="editor" id="editor" cols="30" rows="10"></textarea> -->
     <div id="format"></div>
   </div>
-  <div id="buttons">
+  <div class="buttons">
     <button id="compile">compile</button>
     <button id="genC">generate C</button>
-    <button id="genPY">generate Py</button>
-    <button id="genML">generate ML</button>
+    <button id="genPY">generate Python (<i class="fab fa-python"></i>)</button>
+    <button id="genML">generate OCaml</button>
   </div>
   <div id="specs">
   </div>
   <div id="result">
     <pre id="output"></pre>
+  </div>
+  <div class="buttons">
+    <button>copy to clip board</button>
+    <button>download</button>
   </div>
   <script>
     let compile = document.getElementById('compile')
