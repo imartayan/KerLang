@@ -78,3 +78,9 @@ opam install dune
 ### Compiling the project
 
 Compiling the Glorious KerLang Compiler is as simple as typing `make` at the project's root !
+
+### Using the IDE (experimental feature)
+
+KerLang is shipped with an experimental web IDE. After building the project, one can simply launch the IDE by opening the file `web/app.html` in any web browser.
+
+![ide](img/ide.png)

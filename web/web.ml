@@ -44,6 +44,7 @@ let _ =
     method compile s =
       parse_string (Js.to_string s)
       |> Format.asprintf "%a" Kl_doc.dump_specs
+      |> Js.string
 
     method generatePY s =
       let specs = parse_string (Js.to_string s) in
@@ -53,6 +54,7 @@ let _ =
         val result =
           Kl_codegen.emit_kl_ir specs
           |> Format.asprintf "%a" Kl_codegen.PY_Realizer.realize
+          |> Js.string
       end
 
     method generateML s =
@@ -63,6 +65,7 @@ let _ =
         val result =
           Kl_codegen.emit_kl_ir specs
           |> Format.asprintf "%a" Kl_codegen.ML_Realizer.realize
+          |> Js.string
       end
     
     method generateC s =
@@ -73,5 +76,6 @@ let _ =
         val result =
           Kl_codegen.emit_kl_ir specs
           |> Format.asprintf "%a" Kl_codegen.C_Realizer.realize
+          |> Js.string
       end
   end)

@@ -1,0 +1,60 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./app.css">
+  <script src="../_build/default/web/web.bc.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/split.js/1.6.2/split.min.js"
+    integrity="sha512-to2k78YjoNUq8+hnJS8AwFg/nrLRFLdYYalb18SlcsFRXavCOTfBF3lNyplKkLJeB8YjKVTb1FPHGSy9sXfSdg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"
+    integrity="sha512-GZ1RIgZaSc8rnco/8CXfRdCpDxRCphenIiZ2ztLy3XQfCbQUSCuk8IudvNHxkRA3oUg6q0qejgN/qqyG1duv5Q=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <title>KerLang web IDE</title>
+</head>
+
+<body>
+  <header>KerLang</header>
+  <div id="main">
+    <div id="pan-doc">
+      <h2>Welcome</h2>
+      <p>
+        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Repellendus earum dolore excepturi perferendis est a
+        blanditiis nostrum quasi nobis molestias deserunt recusandae animi accusantium exercitationem quae eius labore,
+        aliquid atque?
+      </p>
+      <h2>Some Documentation</h2>
+      <p>
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestias odit quasi fugit perferendis repudiandae
+        fugiat hic mollitia rem neque numquam eaque, ut, et itaque explicabo est temporibus nemo officia libero!
+      </p>
+    </div>
+    <div id="pan-editor">
+      <div id="split-editor">
+        <div id="code-editor" ondrop="console.log(event);"></div>
+        <div id="compiler-output"></div>
+      </div>
+      <div id="tools">
+        <input type="file" id="input" onchange="loadFile(this.files[0])" />
+        <button>solve</button>
+        <button id="toC">compile to C</button>
+        <button id="toPY">compile to Python</button>
+        <button id="toML">compile to OCaml</button>
+        <button id="copy">copy to clipboard</button>
+      </div>
+      <div id="error-report">
+        <div class="ko">ko !</div>
+        <div class="ok">ok &lt;3</div>
+        <div class="info">info ?</div>
+        <div class="ko">ko !</div>
+        <div class="ok">ok &gt;3</div>
+        <div class="info">info ?</div>
+      </div>
+    </div>
+  </div>
+  <script src="./app.js"></script>
+</body>
+
+</html>
