@@ -1,0 +1,97 @@
+html, body {
+  padding: 0;
+  margin: 0;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+header {
+  width: 100%;
+  height: 10%;
+  background-color: #333;
+  color: white;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: 2em;
+}
+
+body {
+  background-color: #333;
+  color: #fafafa;
+}
+
+#main {
+  display: flex;
+  height: 90%;
+}
+
+#pan-doc {
+  padding: 10px;
+  overflow: scroll;
+}
+
+#pan-editor {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+#split-editor, #error-report {
+  border: 2px solid #444;
+  margin: 10px;
+}
+
+#split-editor {
+  height: 70%;
+  display: flex;
+}
+
+#tools {
+  height: 5%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px;
+}
+
+#tools button {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+#error-report {
+  height: 10%;
+  overflow: scroll;
+}
+
+#compiler-output {
+  overflow: scroll;
+}
+
+.ko {
+  width: 100%;
+  background-color: rgb(255, 125, 125);
+  color: red;
+  font-size: 0.8em;
+}
+
+.ok {
+  width: 100%;
+  background-color: #bada55;
+  color: green;
+  font-size: 0.8em;
+}
+
+.info {
+  width: 100%;
+  background-color: rgb(255, 206, 114);
+  color: orange;
+  font-size: 0.8em;
+}
+
+.gutter {
+  background-color: #444;
+  background-repeat: no-repeat;
+  background-position: 50%;
+}
