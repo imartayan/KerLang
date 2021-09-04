@@ -12,6 +12,8 @@ let output = ace.edit('compiler-output')
 output.setTheme('ace/theme/dracula')
 output.setReadOnly(true)
 
+let error_report = document.getElementById('error-report')
+
 function loadFile(f) {
   f.text().then(txt => ace_editor.setValue(txt))
 }
@@ -26,20 +28,48 @@ copy.addEventListener('click', () => {
   navigator.clipboard.writeText(output.getValue())
 })
 
+let fail = () => {
+  error_report.innerHTML = '<div class="ko">compilation error</div>'
+}
+
+let success = () => {
+  error_report.innerHTML = '<div class="ok">compilation succeeded</div>'
+}
+
+
+
 toC.addEventListener('click', () => {
-  let res = Kerlang.generateC(ace_editor.getValue())
-  output.setValue(res.result)
-  output.session.setMode("ace/mode/c_cpp");
+  try {
+    let res = Kerlang.generateC(ace_editor.getValue())
+    output.setValue(res.result)
+    output.session.setMode("ace/mode/c_cpp");
+  } catch {
+    fail()
+    return
+  }
+  success()
 })
 
 toPY.addEventListener('click', () => {
-  let res = Kerlang.generatePY(ace_editor.getValue())
-  output.setValue(res.result)
-  output.session.setMode("ace/mode/python");
+  try {
+    let res = Kerlang.generatePY(ace_editor.getValue())
+    output.setValue(res.result)
+    output.session.setMode("ace/mode/python")
+  } catch {
+    fail()
+    return;
+  }
+  success()
 })
 
 toML.addEventListener('click', () => {
-  let res = Kerlang.generateML(ace_editor.getValue())
-  output.setValue(res.result)
-  output.session.setMode("ace/mode/ocaml");
+  try {
+    let res = Kerlang.generateML(ace_editor.getValue())
+    output.setValue(res.result)
+    output.session.setMode("ace/mode/ocaml");
+  } catch {
+    fail()
+    return;
+  }
+  success()
 })
