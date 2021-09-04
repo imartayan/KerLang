@@ -6,10 +6,10 @@ Split(['#pan-doc', '#pan-editor'], { sizes: [20, 80] })
 Split(['#code-editor', '#compiler-output'])
 
 let ace_editor = ace.edit('code-editor')
-ace_editor.setTheme('ace/theme/github')
+ace_editor.setTheme('ace/theme/dracula')
 
 let output = ace.edit('compiler-output')
-output.setTheme('ace/theme/github')
+output.setTheme('ace/theme/dracula')
 output.setReadOnly(true)
 
 function loadFile(f) {
