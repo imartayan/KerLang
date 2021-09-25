@@ -1,13 +1,8 @@
+type report = (int * string)
 
+exception AbortPass of report
 
-(* let std_log_function fname =
-  Printf.fprintf *)
-
-(* type report = (int * string) *)
-
-(* exception AbortPass of report *)
-
-(* type reporters = {
+type reporters = {
   ko : int -> string -> unit;
   ok : string -> unit;
   info : string -> unit;
@@ -56,7 +51,7 @@ let _js_reporter = {
   info = _js_info_reporter;
 }
 
-let _reporter = ref _js_reporter
+let _reporter = ref _std_reporter
 
 let set_reporter rep = _reporter := rep
 
@@ -64,4 +59,8 @@ let ko_report line err = !_reporter.ko line err
 
 let ok_report msg = !_reporter.ok msg
 
-let info_report msg = !_reporter.info msg *)
+let info_report msg = !_reporter.info msg
+
+let set_reporter = function
+  | `JS -> set_reporter _js_reporter
+  | `STD -> set_reporter _std_reporter
