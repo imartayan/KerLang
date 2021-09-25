@@ -44,7 +44,6 @@ let set_out_lang s =
   end;
   output_file := s
 
-
 let speclist =
   [("-verbose", Arg.Set verbose, "Output debug information");
    ("-o", Arg.String set_out_lang, "Set output file name, extension must be .ml, .py or .c");
@@ -91,11 +90,13 @@ let () =
     realize_ir code;
     exec_ir code
   with
-  | Kerlang.Kl_errors.DeveloperError msg ->
+  | Kerlang.Kl_errors.AbortPass _ -> ()
+  | _ -> ()
+  (* | Kerlang.Kl_errors.DeveloperError msg ->
     Kerlang.Kl_errors.dev_error msg
   | Kerlang.Kl_errors.SyntaxError (pos, msg) ->
     Kerlang.Kl_errors.syntax_error pos msg
   | Kerlang.Kl_errors.ParseError (pos, msg) ->
     Kerlang.Kl_errors.parse_error pos msg
   | Kerlang.Kl_errors.CompileError msg ->
-    Kerlang.Kl_errors.compile_error msg
+    Kerlang.Kl_errors.compile_error msg *)

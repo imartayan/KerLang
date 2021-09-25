@@ -8,7 +8,7 @@
     Let branch 1 be res if minus 1 and 1 otherwise.
     Let branch 0 be branch 1 if argument 1 and 0 otherwise.
     It returns branch 0.
- */
+*/
 function fibo;
 
 /*
@@ -16,5 +16,5 @@ function fibo;
     It shows a.
     It returns a.
     The expected result is 144.
- */
+*/
 function main;

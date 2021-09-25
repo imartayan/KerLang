@@ -7,6 +7,8 @@ exception ParseError of (Lexing.position * string)
 exception CompileError of string
 exception DeveloperError of string
 
+exception AbortPass of string
+
 let print_position oc (pos : Lexing.position) =
   Printf.fprintf oc "%s:%d:%d" pos.pos_fname
     pos.pos_lnum (pos.pos_cnum - pos.pos_bol + 1)

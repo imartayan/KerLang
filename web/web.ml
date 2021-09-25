@@ -40,6 +40,7 @@ let js_of_spec (Kl_parsing.Spec (_, name, toks)) =
   end
 
 let _ =
+  Kl_pass.info_report "test";
   Js.export "Kerlang" (object%js
     method compile s =
       parse_string (Js.to_string s)
