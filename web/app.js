@@ -1,7 +1,3 @@
-
-
-
-
 Split(['#pan-doc', '#pan-editor'], { sizes: [20, 80] })
 Split(['#code-editor', '#compiler-output'])
 

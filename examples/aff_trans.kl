@@ -1,0 +1,7 @@
+/*
+  This function takes 3 arguments and computes an affine
+  transformation.
+  Let m be the product of argument 1 and argument 2,
+  then it returns the sum of m and argument 3.
+*/
+function aff_trans;

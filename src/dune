@@ -2,6 +2,6 @@
 
 (library
  (name kerlang)
- (libraries js_of_ocaml)
+ (libraries js_of_ocaml schema)
  (preprocess
-  (pps js_of_ocaml-ppx)))
+  (pps js_of_ocaml-ppx schema.ppx_schema)))
