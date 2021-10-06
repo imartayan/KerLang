@@ -1,4 +1,4 @@
-open Kerlang
+(* open Kerlang
 open Js_of_ocaml
 
 let parse_string s =
@@ -43,16 +43,9 @@ let _ =
   Kl_pass.set_reporter `JS;
   Kl_pass.info_report "test";
   Js.export "Kerlang" (object%js
-    method compile s =
-      parse_string (Js.to_string s)
-      |> Format.asprintf "%a" Kl_doc.dump_specs
-      |> Js.string
-
     method generatePY s =
       let specs = parse_string (Js.to_string s) in
       object%js
-        val specs =
-          Format.asprintf "%a" Kl_doc.dump_specs specs
         val result =
           Kl_codegen.emit_kl_ir specs
           |> Format.asprintf "%a" Kl_codegen.PY_Realizer.realize
@@ -62,8 +55,6 @@ let _ =
     method generateML s =
       let specs = parse_string (Js.to_string s) in
       object%js
-        val specs =
-          Format.asprintf "%a" Kl_doc.dump_specs specs
         val result =
           Kl_codegen.emit_kl_ir specs
           |> Format.asprintf "%a" Kl_codegen.ML_Realizer.realize
@@ -73,11 +64,9 @@ let _ =
     method generateC s =
       let specs = parse_string (Js.to_string s) in
       object%js
-        val specs =
-          Format.asprintf "%a" Kl_doc.dump_specs specs
         val result =
           Kl_codegen.emit_kl_ir specs
           |> Format.asprintf "%a" Kl_codegen.C_Realizer.realize
           |> Js.string
       end
-  end)
+  end) *)

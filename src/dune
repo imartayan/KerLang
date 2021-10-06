@@ -1,5 +1,3 @@
-(ocamllex kl_parser)
-
 (library
  (name kerlang)
  (libraries js_of_ocaml schema)

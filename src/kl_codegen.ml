@@ -3,17 +3,7 @@
     Code generation module for KerLang
 *)
 
-open Kl_parsing
-open Kl_constraints
 open Kl_IR
-
-let emit_kl_ir (prog : spec list) : (string * ast) list =
-  List.fold_left (fun ftable (Spec (_, fname, _) as s) ->
-      Printf.printf "\n[Processing function \x1b[1;36m%s\x1b[0m]\n" fname;
-      let res = (fname, generate_function ftable s |> compile_function ftable)::ftable in
-      Printf.printf "[\x1b[1;32mOk\x1b[0m]\n";
-      res
-    ) [] prog |> List.rev
 
 module type TermRealizer = sig
   (** Realize an anonymous term *)
@@ -39,7 +29,7 @@ module Realizer (X : TermRealizer) = struct
           if is_main then begin
             let main_params_count = ast_count_params prog in
             if main_params_count <> 0 then begin
-              Kl_errors.error "the main function must not take or use any parameter"
+              assert false
             end
           end;
           is_main

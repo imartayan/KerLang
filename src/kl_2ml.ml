@@ -65,7 +65,7 @@ and emit_op oc ?(self_name : string option = None) (op: op) =
     Format.fprintf oc "%s" name
   | SELF ->
     match self_name with
-    | None -> Kl_errors.dev_error "self_name needed but not provided"
+    | None -> assert false
     | Some name -> Format.fprintf oc "%s" name
 
 and emit_ast_as_function oc ?(indent_lvl : int = 0) ?self_name:(self_name = None) (func : ast) =

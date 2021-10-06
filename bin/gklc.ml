@@ -5,7 +5,7 @@
 *)
 
 (** Parse a KerLang file and print the result of the parsing *)
-let parse_file f =
+(* let parse_file f =
   let lexbuf = Lexing.from_channel (open_in f) in
   let blocks = ref [] in
   Lexing.set_filename lexbuf f;
@@ -99,4 +99,4 @@ let () =
   | Kerlang.Kl_errors.ParseError (pos, msg) ->
     Kerlang.Kl_errors.parse_error pos msg
   | Kerlang.Kl_errors.CompileError msg ->
-    Kerlang.Kl_errors.compile_error msg *)
+    Kerlang.Kl_errors.compile_error msg *) *)

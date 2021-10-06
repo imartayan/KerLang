@@ -14,14 +14,16 @@ and ast =
 
 type ftable = (string * ast) list
 
+exception GenerationError of string
+
 let flookup (fname : string) (ftable : ftable) : ast =
   match List.assoc_opt fname ftable with
-  | None -> raise (Kl_errors.CompileError ("unknown function " ^ fname))
+  | None -> raise (GenerationError ("unknown function " ^ fname))
   | Some x -> x
 
 let elookup (vname : string) env =
   match List.assoc_opt vname env with
-  | None -> raise (Kl_errors.CompileError ("unknown name " ^ vname ^ " in context"))
+  | None -> raise (GenerationError ("unknown name " ^ vname ^ " in context"))
   | Some x -> x
 
 let[@inline] show x next = App (OUT, [x; next])
@@ -47,18 +49,18 @@ let rec eval ?self:(self : ast option = None) (env : int list) (ftable : ftable)
     else eval ~self env ftable b1
 
 and eval_op (self : ast option) ftable = function
-  | OUT -> (function [x; next] -> print_int x |> print_newline; next | _ -> Kl_errors.dev_error "OUT : wrong number of args")
-  | ADD -> (function [x; y] -> x + y | _ -> Kl_errors.dev_error "ADD : wrong number of args")
-  | SUB -> (function [x; y] -> x - y | _ -> Kl_errors.dev_error "SUB : wrong number of args")
-  | MUL -> (function [x; y] -> x * y | _ -> Kl_errors.dev_error "MUL : wrong number of args")
-  | DIV -> (function [x; y] -> x / y | _ -> Kl_errors.dev_error "DIV : wrong number of args")
+  | OUT -> (function [x; next] -> print_int x |> print_newline; next | _ -> assert false)
+  | ADD -> (function [x; y] -> x + y | _ -> assert false)
+  | SUB -> (function [x; y] -> x - y | _ -> assert false)
+  | MUL -> (function [x; y] -> x * y | _ -> assert false)
+  | DIV -> (function [x; y] -> x / y | _ -> assert false)
   | FUN fname -> (fun args ->
       let body = flookup fname ftable in
       eval ~self:(Some body) args ftable body)
   | SELF ->
     match self with
     | Some body -> fun args -> eval ~self args ftable body
-    | None -> Kl_errors.dev_error "'self' is unbound"
+    | None -> assert false
 
 and pp_ast fmt = function
   | App (op, args) ->
